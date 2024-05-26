@@ -29,7 +29,7 @@ function Bottommenu() {
 	}
 
   return (
-	<div className="w-full h-full bg-slate-100 ">
+	<div className="w-full h-full  ">
 		{rendercomponent(feed)}
 		{/* switch component here */}
 	
