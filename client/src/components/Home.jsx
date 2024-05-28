@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getallUser, login } from "../redux/Actions/UserAchtion";
 
 function Home() {
-
+  const dispatch = useDispatch();
  
+   useEffect(() => {
+    dispatch(login("arvinsen2253@gmail.com" , "password"));
+    dispatch(getallUser());
+  }, []);
+
     //   const res =await axios.post(`${API_URL}/users/signup` , {
     //     email : "sample699@gmail.com",
     //     password : "password",
@@ -10,7 +17,7 @@ function Home() {
     //     fullname : "kaka babarchi"
     // } , {withCredentials : true})
       // console.log(res.data.user); getallusre api
-      // console.log(res.data.data); //login api it send only few data selected data from backend we change in future to recieve all data in response
+      // console.log(res.data.data); //login api it send only few data selected data from backend we change in future to recieve all data in response in backend controller
       // console.log(res.data.data);
    
 

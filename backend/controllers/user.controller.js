@@ -1,7 +1,6 @@
 import { User } from "../models/user.models.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
-import uploadonclodinary from "../utils/cloudinary.js";
 
 export const registerUser = async (req, resp) => {
   try {
@@ -58,7 +57,6 @@ export const login = async (req, resp) => {
 
     const options = {
       httpOnly: true,
-      sameSite: 'none',
       secure: true
   }
   
@@ -82,23 +80,6 @@ export const getallUser = async (_, resp) => {
     resp.status(201).json({ message: "all user found", user: user });
   } catch (error) {
     resp.status(400).json({ message: "failed to fetch" });
-  }
-};
-
-export const updateavatar = async (req, resp) => {
-  try {
-    const ownerid = req.user._id;
-    const user = await User.findById(ownerid);
-    const localimage = req.file.path;
-    const avatar = await uploadonclodinary(localimage);
-    user.avatar = avatar.url;
-    const updateduser = await user.save();
-    return resp
-      .status(200)
-      .json({ message: "Avatar updated successfully", data: updateduser });
-  } catch (error) {
-    console.log(error);
-    resp.status(400).json({ message: "failed to update avatar" });
   }
 };
 
@@ -127,7 +108,6 @@ export const logout = async (req, resp) => {
 
     const options = {
       httpOnly: true,
-      sameSite: 'none',
       secure: true
   }
   
