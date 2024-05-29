@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
+  followAccount,
   getCurrUser,
   getallUser,
+  getuserprofile,
   login,
   logout,
   registerUser,
@@ -17,6 +19,9 @@ userRoutes.route("/login").post(login);
 userRoutes.route("/curruser").get(verifyjwt, getCurrUser);
 userRoutes.route("/updateprofile").post(verifyjwt, updateprofile);
 userRoutes.route("/logout").get(verifyjwt, logout);
+userRoutes.route("/getuserproifle").get(verifyjwt, getuserprofile)
+userRoutes.route("/followuser/:userIdToFollow").get(verifyjwt, followAccount)
+
 
 
 

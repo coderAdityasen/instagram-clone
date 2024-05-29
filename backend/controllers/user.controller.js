@@ -1,4 +1,5 @@
 import { User } from "../models/user.models.js";
+import { Follower } from "../models/followers.models.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -153,4 +154,109 @@ export const updateprofile = async (req, resp) => {
     resp.status(400).json({ message: "failed to update used" });
   }
 };
+
+
+export const getuserprofile = async(req,res)=>{
+	try {
+		const username = req.user.username;
+		
+		const userProfile = await User.aggregate([
+			{
+			  $match: {
+				username: username.toLowerCase()
+			  }
+			},
+			{
+			  $lookup: {
+				from: 'followers',
+				localField: '_id',
+				foreignField: 'following',
+				as: 'followers'
+			  }
+			},
+			{
+			  $lookup: {
+				from: 'followers',
+				localField: '_id',
+				foreignField: 'follower',
+				as: 'following'
+			  }
+			},
+			{
+			  $addFields: {
+				followersCount: {
+				  $size: '$followers'
+				},
+				followingCount: {
+				  $size: '$following'
+				},
+        isFollowing: {
+          $cond: {
+            if: { $in: [req.user?._id, '$followers.follower'] },
+            then: true,
+            else: false
+          }
+        }
+			  }
+			},
+			{
+			  $project: {
+				fullName: 1,
+				username: 1,
+        isFollowing: 1,
+				followersCount: 1,
+				followingCount: 1,
+				avatar: 1,
+				coverImage: 1,
+				email: 1
+			  }
+			}
+		  ]);
+		
+		  if (!userProfile?.length) {
+			throw new ApiError(404, "User profile does not exist");
+		  }
+		
+		  return res.status(200).json({message : "data fetched" , data : userProfile[0]})
+
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+export const followAccount = async(req,res)=>{
+  try {
+    const { userIdToFollow } = req.params;
+    const currentUserId = req.user._id;
+  
+    if (!userIdToFollow) {
+     return res.status(400).json({message : "user id is missing"})
+    }
+  
+    const userToFollow = await User.findById(userIdToFollow);
+    if (!userToFollow) {
+    return  res.status(400).json({message : "no userfound"})
+    }
+  
+    const existingFollow = await Follower.findOne({
+      follower: currentUserId,
+      following: userIdToFollow
+    });
+  
+    if (existingFollow) {
+     return res.status(400).json({message : "existing user"})
+    }
+  
+    const newFollow = new Follower({
+      follower: currentUserId,
+      following: userIdToFollow
+    });
+  
+    await newFollow.save();
+
+    res.status(200).json({message : "user followed success"})
+  } catch (error) {
+    console.log(error);
+  }
+}
 
