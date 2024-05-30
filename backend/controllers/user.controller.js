@@ -1,5 +1,6 @@
 import { User } from "../models/user.models.js";
 import { Follower } from "../models/followers.models.js";
+import { Post } from "../models/Post.models.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -60,7 +61,6 @@ export const login = async (req, resp) => {
       httpOnly: true,
       secure: true
   }
-  
     return resp
       .status(200)
       .cookie("refreshToken", refreshToken , options)
@@ -155,69 +155,76 @@ export const updateprofile = async (req, resp) => {
   }
 };
 
-
 export const getuserprofile = async(req,res)=>{
-	try {
-		const username = req.user.username;
-		
-		const userProfile = await User.aggregate([
-			{
-			  $match: {
-				username: username.toLowerCase()
-			  }
-			},
-			{
-			  $lookup: {
-				from: 'followers',
-				localField: '_id',
-				foreignField: 'following',
-				as: 'followers'
-			  }
-			},
-			{
-			  $lookup: {
-				from: 'followers',
-				localField: '_id',
-				foreignField: 'follower',
-				as: 'following'
-			  }
-			},
-			{
-			  $addFields: {
-				followersCount: {
-				  $size: '$followers'
-				},
-				followingCount: {
-				  $size: '$following'
-				},
-        isFollowing: {
-          $cond: {
-            if: { $in: [req.user?._id, '$followers.follower'] },
-            then: true,
-            else: false
+  try{
+  const { username } = req.params;
+
+  if (!username?.trim()) {
+     res.status(400).json({message : "failed to get username"})
+  }
+
+  const user = await User.aggregate([
+      {
+          $match: {
+              username: username?.toLowerCase()
           }
-        }
-			  }
-			},
-			{
-			  $project: {
-				fullName: 1,
-				username: 1,
-        isFollowing: 1,
-				followersCount: 1,
-				followingCount: 1,
-				avatar: 1,
-				coverImage: 1,
-				email: 1
-			  }
-			}
-		  ]);
+      },
+      {
+          $lookup: {
+              from: "followers",
+              localField: "_id",
+              foreignField: "following",
+              as: "followers"
+          }
+      },
+      {
+          $lookup: {
+              from: "followers",
+              localField: "_id",
+              foreignField: "follower",
+              as: "following"
+          }
+      },
+      {
+          $addFields: {
+              followersCount: { $size: "$followers" },
+              followingCount: { $size: "$following" },
+              isFollowing: {
+                $cond: {
+                  if: {$in: [req.user?._id, "$followers.follower"]},
+                  then: true,
+                  else: false
+              }
+              }
+          }
+      },
+      {
+          $project: {
+              fullName: 1,
+              username: 1,
+              followersCount: 1,
+              followingCount: 1,
+              isFollowing: 1,
+              avatar: 1,
+              coverImage: 1,
+              email: 1,
+          }
+      }
+  ]);
+
+  const posts = await Post.find({ user: user[0]._id });
+
+    const userProfile = {
+        ...user[0],
+        posts: posts
+    };
+
+
+  if (!user.length) {
+     return res.status(400).json({message : "no data found"})
+  }
 		
-		  if (!userProfile?.length) {
-			throw new ApiError(404, "User profile does not exist");
-		  }
-		
-		  return res.status(200).json({message : "data fetched" , data : userProfile[0]})
+		  return res.status(200).json({message : "data fetched" , data : userProfile})
 
 	} catch (error) {
 		console.log(error)
@@ -260,3 +267,70 @@ export const followAccount = async(req,res)=>{
   }
 }
 
+export const curruserProfile = async(req,res)=>{
+  try{
+    const { username } = req.params;
+  
+    if (!username?.trim()) {
+       res.status(400).json({message : "failed to get username"})
+    }
+  
+    const user = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup: {
+                from: "followers",
+                localField: "_id",
+                foreignField: "following",
+                as: "followers"
+            }
+        },
+        {
+            $lookup: {
+                from: "followers",
+                localField: "_id",
+                foreignField: "follower",
+                as: "following"
+            }
+        },
+        {
+            $addFields: {
+                followersCount: { $size: "$followers" },
+                followingCount: { $size: "$following" },
+            }
+        },
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                followersCount: 1,
+                followingCount: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1,
+            }
+        }
+    ]);
+  
+    const posts = await Post.find({ user: user[0]._id });
+  
+      const userProfile = {
+          ...user[0],
+          posts: posts
+      };
+  
+  
+    if (!user.length) {
+       return res.status(400).json({message : "no data found"})
+    }
+      
+        return res.status(200).json({message : "data fetched" , data : userProfile})
+  
+    } catch (error) {
+      console.log(error)
+    }
+}

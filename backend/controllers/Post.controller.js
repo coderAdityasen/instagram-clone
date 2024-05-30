@@ -3,13 +3,18 @@ import { Post } from "../models/Post.models.js";
 
 export const getallpost = async(req,res)=>{
 	try {
-		const allPost = await Post.find().populate("user")
+		const allPosts = await Post.find().populate({
+			path: 'user',
+			select: 'fullname username avatar'
+		  });
 
-		res.status(200).json({post : allPost , message : "all post fetched"})
+
+		res.status(200).json({post : allPosts , message : "all post fetched"})
 	} catch (error) {
 		res.status(400).json({message : "error while getting all the post"})
 	}
 }
+
 
 
 export const uploadPost = async(req,res)=>{
