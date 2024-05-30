@@ -1,8 +1,19 @@
 import React from "react"
-
-import { Link } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import { signup } from "../redux/Actions/UserAchtion"
 
 function Signup() {
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
+	const {register, handleSubmit} = useForm()
+
+	const onsubmit =async (data)=>{
+		await dispatch(signup(data))
+		navigate("/home")
+	}
+
   return (
 	<div className="w-full mt-5 flex justify-center items-center ">
 		<div className="hidden">
@@ -10,7 +21,7 @@ function Signup() {
 		</div>
 
 		<div>
-			<form className=" border w-[23rem]">
+			<form onSubmit={handleSubmit(onsubmit)} className=" border w-[23rem]">
 				<div className="w-full ">
 					<div  id="bgimage" className="py-5 mx-auto">
 					<img
@@ -28,10 +39,19 @@ function Signup() {
 				</div>
 				<div className="grid mx-5 gap-2 ">
 					
-						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="email" placeholder=" Email" />
-						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="text" placeholder="FullName" />
-						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="text" placeholder="Username" />
-						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="password" placeholder="Password" />
+						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="email" placeholder=" Email"
+						{...register("email")}
+						/>
+						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="text" placeholder="FullName"
+						{...register("fullname")}
+						 />
+
+						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="text" placeholder="Username"
+						{...register("username")}
+						 />
+						<input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2" type="password" placeholder="Password" 
+						{...register("password")}
+						/>
 					
 					<h1 className="text-center mx-5 text-sm text-gray-400">
 By signing up, you agree to our Terms , Privacy Policy and Cookies Policy .</h1>

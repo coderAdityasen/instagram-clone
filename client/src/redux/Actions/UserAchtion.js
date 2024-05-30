@@ -17,6 +17,22 @@ export const login = (email, password) => async (dispatch) => {
 	}
   };
 
+  export const signup = (data) => async(dispatch) => {
+	try {
+		dispatch({ type: LOGIN_REQUEST });
+		const res = await axios.post(
+			`${api_url}/users/signup`,
+			data,
+			{withCredentials: true}
+		  );
+
+		dispatch({ type: LOGIN_SUCCESS, payload: res.data.data });
+	  
+	} catch (error) {
+		
+	}
+  }
+
   export const getallUser = ()=> async (dispatch)=>{
 	try {
 		dispatch({type : GETALLUSER_REQUEST});
@@ -37,3 +53,4 @@ export const getcurruser = ()=> async (dispatch)=>{
 		dispatch({type : GET_CURR_USER_FAIL})
 	}
 }
+
