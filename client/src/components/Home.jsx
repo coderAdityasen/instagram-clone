@@ -1,14 +1,22 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { getallUser, login } from "../redux/Actions/UserAchtion";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const dispatch = useDispatch();
- 
-   useEffect(() => {
-    dispatch(login("arvinsen2253@gmail.com" , "password"));
-    dispatch(getallUser());
-  }, []);
+
+  
+  // const dispatch = useDispatch();
+    //  const userstate = useSelector((state)=> state.user)
+  
+  //  useEffect(() => {
+  //  const resp = async ()=>{
+  //   dispatch(login("arvinsen2253@gmail.com" , "password"));
+  //   dispatch(getallUser());
+  //  }
+  
+  //   resp()
+  // }, []);
 
     //   const res =await axios.post(`${API_URL}/users/signup` , {
     //     email : "sample699@gmail.com",

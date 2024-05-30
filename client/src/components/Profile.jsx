@@ -1,17 +1,28 @@
-import React from "react"
+import React, { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { getcurruser } from "../redux/Actions/UserAchtion"
 
 
 function Profile() {
+	const dispatch = useDispatch()
+	
+	useEffect(()=>{
+		dispatch(getcurruser())
+	} , [])
+
+	const user = useSelector((state)=>state.curruser)
 	return (
 	  <>
-	  <div className="lg:w-8/12 lg:mx-auto mb-8">
+	  {user.loading?(<h1>Loading</h1>) : (
+
+		 <div className="lg:w-8/12 lg:mx-auto mb-8">
 	  <header className="flex flex-wrap items-center p-4 md:py-8">
 		<div className="md:w-3/12 md:ml-16">
 		  {/* profile image */}
 		  <img
 			className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full
-				 border-2 border-pink-600 p-1"
-			src="https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80"
+				 border-2 "
+			src={user.currUser.avatar}
 			alt="profile"
 		  />
 		</div>
@@ -19,7 +30,7 @@ function Profile() {
 		<div className="w-8/12 md:w-7/12 ml-4">
 		  <div className="md:flex md:flex-wrap md:items-center mb-4">
 			<h2 className="text-3xl inline-block font-light md:mr-2 mb-2 sm:mb-0">
-			  mrtravlerrr_
+			 {user.currUser.username}
 			</h2>
 			{/* badge */}
 			<span
@@ -44,15 +55,15 @@ function Profile() {
 		  {/* post, following, followers list for medium screens */}
 		  <ul className="hidden md:flex space-x-8 mb-4">
 			<li>
-			  <span className="font-semibold">136</span>
+			  <span className="font-semibold mr-1">{user.currUser.posts.length}</span>
 			  posts
 			</li>
 			<li>
-			  <span className="font-semibold">40.5k</span>
+			  <span className="font-semibold mr-1">{user.currUser.followersCount}</span>
 			  followers
 			</li>
 			<li>
-			  <span className="font-semibold">302</span>
+			  <span className="font-semibold mr-1">{user.currUser.followingCount}</span>
 			  following
 			</li>
 		  </ul>
@@ -77,20 +88,22 @@ function Profile() {
 			text-center p-2 text-gray-600 leading-snug text-sm"
 		>
 		  <li>
-			<span className="font-semibold text-gray-800 block">136</span>
+			<span className="font-semibold text-gray-800 block">{user.currUser.posts.length}</span>
 			posts
 		  </li>
 		  <li>
-			<span className="font-semibold text-gray-800 block">40.5k</span>
+			<span className="font-semibold text-gray-800 block">{user.currUser.followersCount}</span>
 			followers
 		  </li>
 		  <li>
-			<span className="font-semibold text-gray-800 block">302</span>
+			<span className="font-semibold text-gray-800 block">{user.currUser.followingCount}</span>
 			following
 		  </li>
 		</ul>
 		</div>
 	  </div>
+	  )}
+	 
 	  </>
 	)
   }

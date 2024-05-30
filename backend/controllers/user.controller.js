@@ -269,7 +269,7 @@ export const followAccount = async(req,res)=>{
 
 export const curruserProfile = async(req,res)=>{
   try{
-    const { username } = req.params;
+    const username = req.user.username;
   
     if (!username?.trim()) {
        res.status(400).json({message : "failed to get username"})

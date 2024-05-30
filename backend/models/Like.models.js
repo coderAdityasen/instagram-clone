@@ -5,10 +5,6 @@ const LikeSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: "Post"
     },
-    comment: {
-        type: Schema.Types.ObjectId,
-        ref: "Comment"
-    },
     
     likedBy: {
         type: Schema.Types.ObjectId,

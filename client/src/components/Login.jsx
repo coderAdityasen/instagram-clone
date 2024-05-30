@@ -1,11 +1,24 @@
 import React from "react";
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux";
+import { login } from "../redux/Actions/UserAchtion";
 
 function Login() {
+  const {register, handleSubmit } = useForm();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const onsubmit =async (data)=>{
+    await dispatch(login(data.email, data.password))
+
+     navigate("/home")
+  }
+
   return (
     <div className="w-full flex justify-center items-center ">
       <div>
-        <form className=" mt-16 border w-[23rem]">
+        <form onSubmit={handleSubmit(onsubmit)} className=" mt-16 border w-[23rem]">
           <div className="w-full">
             <img
               src="https://1000logos.net/wp-content/uploads/2017/02/Logo-Instagram.png"
@@ -17,12 +30,14 @@ function Login() {
             <input
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
               type="email"
-              placeholder="Username or Email"
+              placeholder="Email"
+              {...register("email")}
             />
             <input
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2"
               type="password"
               placeholder="Password"
+              {...register("password")}
             />
 
             <button

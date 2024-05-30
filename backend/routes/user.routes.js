@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
+  curruserProfile,
   followAccount,
-  getCurrUser,
   getallUser,
   getuserprofile,
   login,
@@ -16,7 +16,7 @@ const userRoutes = Router();
 userRoutes.route("/signup").post(registerUser);
 userRoutes.route("/getalluser").get(getallUser);
 userRoutes.route("/login").post(login);
-userRoutes.route("/curruser").get(verifyjwt, getCurrUser);
+userRoutes.route("/curruser").get(verifyjwt, curruserProfile);
 userRoutes.route("/updateprofile").post(verifyjwt, updateprofile);
 userRoutes.route("/logout").get(verifyjwt, logout);
 userRoutes.route("/getuserproifle/:username").get(verifyjwt, getuserprofile)

@@ -12,8 +12,12 @@ function Signup() {
 		<div>
 			<form className=" border w-[23rem]">
 				<div className="w-full ">
-					<div  id="bgimage" className="py-16 mx-auto">
-					&#8209;
+					<div  id="bgimage" className="py-5 mx-auto">
+					<img
+              src="https://1000logos.net/wp-content/uploads/2017/02/Logo-Instagram.png"
+              className="w-40 mx-auto"
+              alt=""
+            />
 					</div>
 					<h1 className="text-gray-600 mx-12 font-semibold">Sign up to see photos and videos from your friends.</h1>
 					<button className="bg-blue-500 text-white mx-auto rounded-md my-5 ml-10 px-16 py-1">Login using FaceBook</button>

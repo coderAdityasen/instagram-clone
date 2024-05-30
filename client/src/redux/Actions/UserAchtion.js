@@ -1,6 +1,6 @@
 import { api_url } from "../../utils/utils";
 import axios from "axios"
-import {LOGIN_REQUEST , LOGIN_FAIL, LOGIN_SUCCESS, GETALLUSER_REQUEST, GETALLUSER_SUCCESS, GETALLUSER_FAIL} from "../Constants/UserConstants"
+import {LOGIN_REQUEST , LOGIN_FAIL, LOGIN_SUCCESS, GETALLUSER_REQUEST, GETALLUSER_SUCCESS, GETALLUSER_FAIL, GET_CURR_USER_REQUEST, GET_CURR_USER_SUCCESS, GET_CURR_USER_FAIL} from "../Constants/UserConstants"
 
 export const login = (email, password) => async (dispatch) => {
 	try {
@@ -27,3 +27,13 @@ export const login = (email, password) => async (dispatch) => {
 	}
   }
 
+export const getcurruser = ()=> async (dispatch)=>{
+	try {
+		dispatch({type : GET_CURR_USER_REQUEST});
+		const res = await axios.get(`${api_url}/users/curruser` , {withCredentials : true})
+		// console.log(res)
+		dispatch({type : GET_CURR_USER_SUCCESS , payload : res.data.data})
+	} catch (error) {
+		dispatch({type : GET_CURR_USER_FAIL})
+	}
+}
