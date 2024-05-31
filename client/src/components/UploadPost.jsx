@@ -5,7 +5,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { FaFolderOpen } from "react-icons/fa";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { uploadpost } from "../redux/Actions/postAction";
+import { setHasMore, uploadpost } from "../redux/Actions/postAction";
 
 function Uploadpost() {
 	const dispatch = useDispatch()
@@ -36,6 +36,7 @@ function Uploadpost() {
     }
     dispatch(uploadpost(form))
     toast.success("post uploaded successfully")
+    dispatch(setHasMore(true))
   }
 
   return (

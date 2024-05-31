@@ -1,61 +1,81 @@
 import { Post } from "../models/Post.models.js";
 
+class APIfeatures  {
+	constructor(query, queryString){
+	  this.query = query;
+	  this.queryString = queryString;
+	}
+  
+	paginating(){
+	  const page = this.queryString.page * 1 || 1; 
+	  const limit = this.queryString.limit * 1 || 2;
+	  const skip = (page -1) * limit; 
+	  this.query = this.query.skip(skip).limit(limit);
+	  return this;
+	}
+  }
+  
 
 export const getallpost = async(req,res)=>{
 	try {
-		const allPosts = await Post.aggregate([
-		  {
-			$lookup: {
-			  from: 'users', // Collection name
-			  localField: 'user',
-			  foreignField: '_id',
-			  as: 'user'
+		const totalPostsCount = await Post.countDocuments();
+
+		const features = new APIfeatures(Post.aggregate([
+			{
+				$lookup: {
+					from: 'users', // Collection name
+					localField: 'user',
+					foreignField: '_id',
+					as: 'user'
+				}
+			},
+			{
+				$unwind: '$user' // Deconstruct the user array
+			},
+			{
+				$lookup: {
+					from: 'likes', // Collection name
+					localField: '_id',
+					foreignField: 'post',
+					as: 'likes'
+				}
+			},
+			{
+				$addFields: {
+					likeCount: { $size: '$likes' } // Add like count field
+				}
+			},
+			{
+				$project: {
+					content: 1,
+					image: 1,
+					createdAt: 1,
+					updatedAt: 1,
+					likeCount: 1,
+					user: {
+						_id: 1,
+						fullName: 1,
+						username: 1,
+						avatar: 1
+					}
+				}
+			},
+			{
+				$sort: { createdAt: -1 } // Sort posts by creation date
 			}
-		  },
-		  {
-			$unwind: '$user' // Deconstruct the user array
-		  },
-		  {
-			$lookup: {
-			  from: 'likes', // Collection name
-			  localField: '_id',
-			  foreignField: 'post',
-			  as: 'likes'
-			}
-		  },
-		  {
-			$addFields: {
-			  likeCount: { $size: '$likes' } // Add like count field
-			}
-		  },
-		  {
-			$project: {
-			  content: 1,
-			  image: 1,
-			  createdAt: 1,
-			  updatedAt: 1,
-			  likeCount: 1,
-			  user: {
-				_id: 1,
-				fullName: 1,
-				username: 1,
-				avatar: 1
-			  }
-			}
-		  },
-		  {
-			$sort: { createdAt: -1 } // Sort posts by creation date
-		  }
-		]);
-	
+		]), req.query).paginating();
+
+		const allPosts = await features.query;
+
 		res.status(200).json({
-		  posts: allPosts,
-		  message: "All posts fetched successfully"
+			posts: allPosts,
+			totalPosts: totalPostsCount,
+			message: "All posts fetched successfully"
 		});
-	  } catch (error) {
+	} catch (error) {
 		console.error(error);
 		res.status(400).json({ message: "Error while getting all the posts" });
-	  }
+	}
 }
 
 
