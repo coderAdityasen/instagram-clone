@@ -4,12 +4,8 @@ import { getcurruser } from "../redux/Actions/UserAchtion"
 
 
 function Profile() {
-	const dispatch = useDispatch()
 	
-	useEffect(()=>{
-		dispatch(getcurruser())
-	} , [])
-
+	const dispatch = useDispatch()
 	const user = useSelector((state)=>state.curruser)
 	return (
 	  <>

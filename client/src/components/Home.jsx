@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getallUser, login } from "../redux/Actions/UserAchtion";
+import { getallUser, getcurruser, login } from "../redux/Actions/UserAchtion";
 import { Link } from "react-router-dom";
 
 function Home() {
+  const dispatch = useDispatch()
 
+  useEffect(()=>{
+		dispatch(getcurruser())
+	} , [])
+  
   
   // const dispatch = useDispatch();
     //  const userstate = useSelector((state)=> state.user)
