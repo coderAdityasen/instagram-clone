@@ -31,3 +31,9 @@ export const GETALLPOST_FAIL = "GETALLPOST_FAIL"
 
 export const SET_TOTAL_LENGTH = "SET_TOTAL_LENGTH"
 export const SET_HAS_MORE = "SET_HAS_MORE"
+
+export const LIKE_POST = "LIKE_POST"
+export const UNLIKE_POST = "UNLIKE_POST"
+export const LIKE_POST_FAIL = "LIKE_POST_FAIL"
+export const UNLIKE_POST_FAIL = "UNLIKE_POST_FAIL"
+

@@ -17,8 +17,7 @@ function Bottommenu() {
 	const {totalLength , allposts , hasMore , loading} = postState;
 
 	const dispatch = useDispatch()
-	const [page, setPage] = useState(1);
-	const [limit] = useState(2);  
+
 
 
 	useEffect(()=>{
@@ -26,44 +25,9 @@ function Bottommenu() {
 	} , [])
 
 
-	useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				await dispatch(getAllPost(page, limit));
-				if (totalLength == allposts.length) {
-									dispatch(setHasMore(false)) // No more posts to load
-								}
-			} catch (error) {
-				console.error("Error fetching posts:", error);
-			}
-		};
-
-		fetchPosts();
-	}, [dispatch, page, limit]);
-
-		const loadMorePosts = () => {
-		if (totalLength !== allposts.length) {
-			setPage((prevPage) => prevPage + 1);
-		}
-	};
-
-	useEffect(() => {
-		const handleScroll = () => {
-			if (
-				window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
-				!loading
-			) {
-				loadMorePosts();
-			}
-		};
-
-		window.addEventListener("scroll", handleScroll);
-
-		return () => {
-			window.removeEventListener("scroll", handleScroll);
-		};
-	}, [loading]);
-
+	useEffect(()=>{
+		dispatch(getAllPost())
+	}, [])
 
 	const rendercomponent = (feed) => {
 		switch (feed) {

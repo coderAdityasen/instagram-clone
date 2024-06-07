@@ -1,26 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllPost } from "./redux/Actions/postAction";
+import React, { useState } from 'react';
 
+function Test({ post }) {
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
 
-const Test = () => {
-	// const dispatch = useDispatch();
-	const postState = useSelector((state) => state.posts);
-	const { loading, allposts , hasMore } = postState;
+  const handleLike = async () => {
+    // Optimistically update UI
+    setIsLiked(!isLiked);
+    try {
+      // Make API call to like or unlike post
+      if (isLiked) {
+        // await unlikePostApiCall(post._id);
+		setLikeCount((prev)=>prev-1)
+      } else {
+        // await likePostApiCall(post._id);
+		setLikeCount((prev)=>prev+1)
+      }
+    } catch (error) {
+      console.error('Failed to update like', error);
+    }
+  };
 
-	return (
-		<div className="my-20">
-			{allposts.map((post) => (
-				<div key={post._id}>
-					<h3>{post.content}</h3>
-					<img src={post.image} alt={post.content} />
-					<p>Likes: {post.likeCount}</p>
-				</div>
-			))}
-			{loading && <p>Loading...</p>}
-			{!hasMore && <p>No more posts to load</p>}
-		</div>
-	);
-};
+  return (
+    <div>
+      <p>{post.content}</p>
+      <button onClick={handleLike}>
+        {isLiked ? 'Unlike' : 'Like'} ({likeCount})
+      </button>
+    </div>
+  );
+}
+
 
 export default Test;

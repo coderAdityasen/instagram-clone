@@ -1,4 +1,6 @@
+import { Like } from "../models/Like.models.js";
 import { Post } from "../models/Post.models.js";
+
 
 class APIfeatures  {
 	constructor(query, queryString){
@@ -20,7 +22,7 @@ export const getallpost = async(req,res)=>{
 	try {
 		const totalPostsCount = await Post.countDocuments();
 
-		const features = new APIfeatures(Post.aggregate([
+		const features = await Post.aggregate([
 			{
 				$lookup: {
 					from: 'users', // Collection name
@@ -42,7 +44,14 @@ export const getallpost = async(req,res)=>{
 			},
 			{
 				$addFields: {
-					likeCount: { $size: '$likes' } // Add like count field
+					likeCount: { $size: '$likes' } ,
+					isLiked: {
+                        $cond: {
+                            if: { $in: [req.user._id, "$likes.likedBy"] },
+                            then: true,
+                            else: false
+                        }
+                    }
 				}
 			},
 			{
@@ -52,6 +61,7 @@ export const getallpost = async(req,res)=>{
 					createdAt: 1,
 					updatedAt: 1,
 					likeCount: 1,
+					isLiked: 1,
 					user: {
 						_id: 1,
 						fullName: 1,
@@ -63,12 +73,10 @@ export const getallpost = async(req,res)=>{
 			{
 				$sort: { createdAt: -1 } // Sort posts by creation date
 			}
-		]), req.query).paginating();
-
-		const allPosts = await features.query;
+		])
 
 		res.status(200).json({
-			posts: allPosts,
+			posts: features,
 			totalPosts: totalPostsCount,
 			message: "All posts fetched successfully"
 		});
@@ -97,5 +105,63 @@ export const uploadPost = async(req,res)=>{
 	} catch (error) {
 		res.status(400).json({message : "post upload failed"})
 	}
+}
+
+export const likePost = async(req,res)=>{
+	try {
+        const { postId } = req.body;
+		const userId = req.user._id;
+
+        // Check if the post exists
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        // Check if the user has already liked the post
+        const existingLike = await Like.findOne({ post: postId, likedBy: userId });
+        if (existingLike) {
+            return res.status(400).json({ message: "You have already liked this post" });
+        }
+
+        // Create a new like
+        const like = new Like({
+            post: postId,
+            likedBy: userId,
+        });
+
+        await like.save();
+
+        return res.status(201).json({ message: "Post liked successfully", like : like});
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error });
+    }
+}
+
+export const unlikePost = async (req,res)=>{
+	try {
+        const { postId } = req.body;
+		const userId = req.user._id;
+
+        // Check if the post exists
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        // Check if the like exists
+        const like = await Like.findOne({ post: postId, likedBy: userId });
+        if (!like) {
+            return res.status(400).json({ message: "You have not liked this post" });
+        }
+
+        // Remove the like
+       await like.deleteOne();
+
+        return res.status(200).json({ message: "Post unliked successfully" });
+    } catch (error) {
+		console.log(error);
+        return res.status(500).json({ message: "Server error", error });
+    }
 }
 

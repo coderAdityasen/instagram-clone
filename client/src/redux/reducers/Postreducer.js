@@ -1,4 +1,4 @@
-import { GETALLPOST_FAIL, GETALLPOST_REQUEST, GETALLPOST_SUCCESS, SET_HAS_MORE, SET_TOTAL_LENGTH } from "../Constants/UserConstants";
+import { GETALLPOST_FAIL, GETALLPOST_REQUEST, GETALLPOST_SUCCESS, LIKE_POST, SET_HAS_MORE, SET_TOTAL_LENGTH } from "../Constants/UserConstants";
 
 
 
@@ -8,6 +8,7 @@ const initialState = {
 	totalLength : 0,
 	hasMore : true
   };
+
 
 
 export const Postreducer = (state = initialState, action)=>{
@@ -38,6 +39,7 @@ export const Postreducer = (state = initialState, action)=>{
 				  ...state,
 				  hasMore: action.payload
 				};
+		
 		default:
 			return state;
 	}

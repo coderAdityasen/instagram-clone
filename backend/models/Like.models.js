@@ -1,10 +1,12 @@
-import mongoose from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
-const LikeSchema = mongoose.Schema({
+const LikeSchema =new Schema({
 	post: {
         type: Schema.Types.ObjectId,
         ref: "Post"
     },
+
+    
     
     likedBy: {
         type: Schema.Types.ObjectId,
